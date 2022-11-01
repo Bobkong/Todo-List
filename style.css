@@ -68,7 +68,7 @@ form button:hover {
     color: black;
 }
 
-.check-button, .delete-button {
+.check-button, .delete-button, .edit-button {
     border: none;
     margin: 0.2rem;
     padding: 0.5rem;
@@ -84,6 +84,11 @@ form button:hover {
     background: #fda085;
 }
 
+.edit-button {
+    color: white;
+    background:blueviolet;
+}
+
 .check-button:hover {
     color: #14b236;
     background: white;
@@ -92,6 +97,11 @@ form button:hover {
 .delete-button:hover {
     color: #fda085;
     background: white;
+}
+
+.edit-button:hover {
+    background: white;
+    color:blueviolet;
 }
 
 .fa-trash, .fa-check {
@@ -162,4 +172,8 @@ select {
     font-size: 1.5rem;
     padding: 0.75rem;
     font-family: "Poppins", sans-serif;
+}
+
+i {
+    pointer-events: none;
 }

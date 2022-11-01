@@ -20,6 +20,7 @@ function addTodo(event) {
     // prevent form from submitting
     event.preventDefault();
     let todoText = todoInput.value;
+    console.log(todoText);
     let todoDeadline = todoDate.value;
     
     const todoItem = {
@@ -28,13 +29,16 @@ function addTodo(event) {
         deadline: todoDeadline,
         id: GenNonDuplicateID()
     }
-    // add todo to layout
-    addTodoLayout(todoItem);
+    if (todoItem.text != '') {
+        // add todo to layout
+        addTodoLayout(todoItem);
 
-    // add todo to localstorage
-    saveToLocal(todoItem);
+        // add todo to localstorage
+        saveToLocal(todoItem);
 
-    todoInput.value = '';
+        todoInput.value = '';
+    }
+    
 }
 
 function addTodoLayout(todoItem) {
@@ -56,16 +60,21 @@ function addTodoLayout(todoItem) {
         }
 
         // create todo text
-        let todoText = document.createElement('input');
-        todoText.value = todoItem.text;
+        let todoText = document.createElement('span');
+        todoText.textContent = todoItem.text;
         todoText.classList.add('todo-text');
-        todoText.addEventListener('blur', updateTextToLocal);
         newTodoItem.appendChild(todoText);
 
         let todoDate = document.createElement('span');
         todoDate.innerText = todoItem.deadline;
         todoDate.classList.add('todo-date-text');
         newTodoItem.appendChild(todoDate);
+
+        // create edit button
+        let editButton = document.createElement('button');
+        editButton.innerHTML = '<i class="fas fa-pen"></i>';
+        editButton.classList.add('edit-button');
+        newTodoItem.appendChild(editButton);
 
         // create check button
         let completeButton = document.createElement('button');
@@ -86,12 +95,15 @@ function addTodoLayout(todoItem) {
 
 
 function modifyTodo(event) {
-    if(event.target.classList[0] == 'check-button') {
+    let btnClass = event.target.classList[0];
+    if(btnClass == 'check-button') {
         // click check button
         checkItem(event);
-    } else if(event.target.classList[0] == 'delete-button') {
+    } else if(btnClass == 'delete-button') {
         // click delete button
         deleteItem(event);
+    } else if(btnClass == 'edit-button') {
+        editItem(event);
     }
 }
 
@@ -121,6 +133,43 @@ function deleteItem(event) {
     });
     // remove the todo item from local storage
     deleteTodoFromLocal(todoItem.id)
+}
+
+var currentEditId = null;
+
+function editItem(event) {
+    console.log(event.target.parentNode);
+    for(const node of event.target.parentNode.childNodes) {
+        if(node.classList[0] === 'todo-text') {
+            todoInput.value = node.textContent;
+        } else if (node.classList[0] === 'todo-date-text') {
+            todoDate.value = node.textContent;
+        }
+    }
+
+    let todoIcon = document.querySelector('.todo-button i');
+    todoIcon.classList.remove('fa-plus-square');
+    todoIcon.classList.add('fa-edit');
+
+    currentEditId = event.target.parentNode.id;
+    todoButton.removeEventListener('click', addTodo);
+    todoButton.addEventListener('click', editTodo);
+
+}
+
+function editTodo() {
+    if (currentEditId != null) {
+        updateTextToLocal(currentEditId);
+        currentEditId = null;
+    }
+
+    let todoIcon = document.querySelector('.todo-button i');
+    todoIcon.classList.remove('fa-edit');
+    todoIcon.classList.add('fa-plus-square');
+
+    todoButton.addEventListener('click', addTodo);
+    todoButton.removeEventListener('click', editTodo);
+    
 }
 
 // change to a new filter
@@ -211,15 +260,14 @@ function deleteTodoFromLocal(id) {
 }
 
 // update the todo item content
-function updateTextToLocal(event) {
-    let todoItem = event.target.parentNode;
+function updateTextToLocal(id) {
     let todos = getTodos();
     const newTodo = todos.map(todo => {
-        if(todo.id == todoItem.id) {
+        if(todo.id == id) {
             return {
-                text: event.target.value,
+                text: todoInput.value,
                 completed: todo.completed,
-                deadline: todo.deadline,
+                deadline: todoDate.value,
                 id: todo.id
             };
         }
