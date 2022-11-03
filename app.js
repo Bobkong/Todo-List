@@ -18,7 +18,6 @@ initialTodoItem();
 
 function addTodo(event) {
     // prevent form from submitting
-    event.preventDefault();
     let todoText = todoInput.value;
     console.log(todoText);
     let todoDeadline = todoDate.value;
