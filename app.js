@@ -278,5 +278,19 @@ function updateTextToLocal(id) {
 
 // generate a unique id
 function GenNonDuplicateID(){
-    return Math.random().toString()
+    return new Date().getTime().toString();
 }
+
+// promise
+new Promise(function(resolve, reject) {
+    setTimeout(() => {
+      console.log('111');
+      reject('err');
+  }, 1000);
+  }).then(function() {
+      setTimeout(() => {
+        console.log('111');
+      }, 1000);
+  }).catch(function(err) {
+    console.log(err);
+  });
